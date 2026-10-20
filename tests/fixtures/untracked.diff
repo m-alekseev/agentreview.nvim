@@ -1,0 +1,8 @@
+diff --git a/untracked.txt b/untracked.txt
+new file mode 100644
+index 0000000..22d66d1
+--- /dev/null
++++ b/untracked.txt
+@@ -0,0 +1,2 @@
++fresh1
++fresh2

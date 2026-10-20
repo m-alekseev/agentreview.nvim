@@ -1,0 +1,48 @@
+diff --git a/bin.dat b/bin.dat
+index 6772730..fc759a3 100644
+Binary files a/bin.dat and b/bin.dat differ
+diff --git a/edit.txt b/edit.txt
+index b9bca01..d90e986 100644
+--- a/edit.txt
++++ b/edit.txt
+@@ -1 +1,2 @@
+ plain
++new line
+diff --git a/multi.txt b/multi.txt
+index bea6346..9d2ab68 100644
+--- a/multi.txt
++++ b/multi.txt
+@@ -1,5 +1,5 @@
+ one
+-two
++TWO
+ three
+ four
+ five
+@@ -11,5 +11,5 @@ ten
+ eleven
+ twelve
+ thirteen
+-fourteen
++FOURTEEN
+ fifteen
+diff --git a/removed.txt b/removed.txt
+deleted file mode 100644
+index 988cd72..0000000
+--- a/removed.txt
++++ /dev/null
+@@ -1,2 +0,0 @@
+-gone1
+-gone2
+diff --git a/renamed_old.txt b/renamed_new.txt
+similarity index 77%
+rename from renamed_old.txt
+rename to renamed_new.txt
+index 735cfd8..1c63e8a 100644
+--- a/renamed_old.txt
++++ b/renamed_new.txt
+@@ -2,3 +2,4 @@ keep a
+ keep b
+ keep c
+ keep d
++added e
