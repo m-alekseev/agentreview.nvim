@@ -10,7 +10,7 @@ function M.send(opts, done)
     return done(false, err)
   end
   local path = git_dir .. "/agent-review.md"
-  if vim.fn.writefile(vim.split(export.render(opts.comments), "\n", { plain = true }), path) ~= 0 then
+  if vim.fn.writefile(vim.split(export.render(opts.comments, opts.scope), "\n", { plain = true }), path) ~= 0 then
     return done(false, "cannot write " .. path)
   end
   local prompt = opts.template:gsub("{path}", function()

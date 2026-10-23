@@ -208,7 +208,7 @@ local function refresh_winbar()
   vim.wo[win].winbar = (text:gsub("%%", "%%%%"))
 end
 
-local function show(root, lines, parsed)
+local function show(root, lines, parsed, scope)
   if #comments.items > 0 then
     notify(("discarding %d comment(s) from the previous review"):format(#comments.items), vim.log.levels.WARN)
   end
@@ -245,6 +245,7 @@ local function show(root, lines, parsed)
   highlight.apply(buf, lines, parsed)
 
   M.root = root
+  M.scope = scope
   comments.attach(buf, parsed)
   set_keymaps(buf)
   refresh_winbar()
@@ -260,7 +261,11 @@ function M.open(base)
     notify(parsed, vim.log.levels.ERROR)
     return
   end
-  show(root, lines, parsed)
+  local scope = "changes not committed yet (staged, unstaged and untracked files)"
+  if base ~= "" then
+    scope = ("all changes since %s, committed and not (tracked files only)"):format(base)
+  end
+  show(root, lines, parsed, scope)
 end
 
 local function open_rev(root, rev)
@@ -269,7 +274,12 @@ local function open_rev(root, rev)
     notify(parsed, vim.log.levels.ERROR)
     return
   end
-  show(root, lines, parsed)
+  local out, err = git.run({ "show", "-s", "--format=%H %s", rev }, root)
+  if not out then
+    notify(err, vim.log.levels.ERROR)
+    return
+  end
+  show(root, lines, parsed, "commit " .. vim.trim(out))
 end
 
 function M.open_commit(rev)
@@ -324,6 +334,7 @@ function M.send()
   end
   send.send({
     comments = comments.sorted(),
+    scope = M.scope,
     transport = transport,
     repo_root = root,
     template = M.config.prompt_template,

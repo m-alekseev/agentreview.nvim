@@ -17,8 +17,12 @@ local function inline(text)
   return ticks .. " " .. text .. " " .. ticks
 end
 
-function M.render(comments)
+function M.render(comments, scope)
   local out = { "# Code review comments" }
+  if scope then
+    out[#out + 1] = ""
+    out[#out + 1] = "Reviewing: " .. scope
+  end
   for _, c in ipairs(comments) do
     local snippet = table.concat(c.snippet, "\n")
     local f = fence(snippet)
