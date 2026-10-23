@@ -40,13 +40,13 @@ require("agentreview").setup({})
 
 ## How I use it
 
-I have an alias in my `.zshrc`:
+I have a function in my `.zshrc`:
 
 ```sh
-nr() { if [ -n "$1" ]; then nvim -c "AgentReviewCommit $1"; else nvim -c AgentReview; fi }
+nr() { nvim -c "AgentReview $1"; }
 ```
 
-After the agent finishes, I `cd` into the repo, type `nr`, comment on the diff and send the comments back to it. `nr <rev>` reviews only that commit's changes.
+After the agent finishes, I `cd` into the repo, type `nr`, comment on the diff and send the comments back to it. `nr` shows what isn't committed yet. `nr <rev>` shows everything after `<rev>`, e.g. `nr HEAD~3` for the last 3 commits or `nr origin/master` for unpushed ones. Use `:AgentReviewCommit <rev>` to review a single commit instead.
 
 ## Config
 
@@ -68,7 +68,7 @@ require("agentreview").setup({
 
 | Command | Action |
 | --- | --- |
-| `:AgentReview [base]` | Open the diff (working tree vs `HEAD`, plus untracked files; or vs `base`) |
+| `:AgentReview [base]` | Open the diff: without `base`, everything not committed yet (working tree vs `HEAD`, plus untracked files); with `base`, everything after `base` (commits made since, staged and unstaged edits; untracked files are not included) |
 | `:AgentReviewCommit [rev]` | Open only the changes of one commit (like `git show`); without `rev`, pick from the last 50 commits. Merge commits diff against the first parent |
 | `:'<,'>AgentReviewComment` | Comment on the selected lines |
 | `:AgentReviewSend` | Write `<git-dir>/agent-review.md` and send the prompt via the transport |
