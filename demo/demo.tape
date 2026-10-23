@@ -70,6 +70,31 @@ Sleep 500ms
 Enter
 Sleep 3s
 
+Type ":AgentReviewTarget"
+Sleep 500ms
+Enter
+Sleep 1500ms
+Type "1"
+Sleep 600ms
+Enter
+Sleep 1000ms
+
+Type ":AgentReviewCommit"
+Sleep 500ms
+Enter
+Sleep 1500ms
+Type "1"
+Sleep 600ms
+Enter
+Sleep 2s
+
+Type ":AgentReview HEAD~1"
+Sleep 500ms
+Enter
+Sleep 2s
+Type "]f"
+Sleep 1500ms
+
 Type ":qa!"
 Enter
 Sleep 800ms

@@ -43,6 +43,18 @@ LUA
 git add app.lua
 git commit -q -m "add app"
 
+cat > util.lua <<'LUA'
+local M = {}
+
+function M.clamp(n, lo, hi)
+  return math.max(lo, math.min(n, hi))
+end
+
+return M
+LUA
+git add util.lua
+git commit -q -m "add util"
+
 cat > app.lua <<'LUA'
 local http = require("http")
 local log = require("log")
