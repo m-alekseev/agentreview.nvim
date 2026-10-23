@@ -96,6 +96,7 @@ local function show_help()
   }
   for _, g in ipairs({
     { "AgentReview", "start review" },
+    { "AgentReviewCommit", "review a commit" },
     { "AgentReviewTarget", "choose target" },
     { "AgentReviewSend", "send comments" },
   }) do
@@ -207,16 +208,7 @@ local function refresh_winbar()
   vim.wo[win].winbar = (text:gsub("%%", "%%%%"))
 end
 
-function M.open(base)
-  local root = repo_root()
-  if not root then
-    return
-  end
-  local lines, parsed = diff.build(base ~= "" and base or nil, root)
-  if not lines then
-    notify(parsed, vim.log.levels.ERROR)
-    return
-  end
+local function show(root, lines, parsed)
   if #comments.items > 0 then
     notify(("discarding %d comment(s) from the previous review"):format(#comments.items), vim.log.levels.WARN)
   end
@@ -256,6 +248,57 @@ function M.open(base)
   comments.attach(buf, parsed)
   set_keymaps(buf)
   refresh_winbar()
+end
+
+function M.open(base)
+  local root = repo_root()
+  if not root then
+    return
+  end
+  local lines, parsed = diff.build(base ~= "" and base or nil, root)
+  if not lines then
+    notify(parsed, vim.log.levels.ERROR)
+    return
+  end
+  show(root, lines, parsed)
+end
+
+local function open_rev(root, rev)
+  local lines, parsed = diff.build(nil, root, rev)
+  if not lines then
+    notify(parsed, vim.log.levels.ERROR)
+    return
+  end
+  show(root, lines, parsed)
+end
+
+function M.open_commit(rev)
+  local root = repo_root()
+  if not root then
+    return
+  end
+  if rev ~= "" then
+    return open_rev(root, rev)
+  end
+  local list, err = diff.commits(root)
+  if not list then
+    notify(err, vim.log.levels.ERROR)
+    return
+  end
+  if #list == 0 then
+    notify("no commits", vim.log.levels.ERROR)
+    return
+  end
+  vim.ui.select(list, {
+    prompt = "Select commit",
+    format_item = function(c)
+      return c.label
+    end,
+  }, function(choice)
+    if choice then
+      open_rev(root, choice.rev)
+    end
+  end)
 end
 
 function M.comment(o)

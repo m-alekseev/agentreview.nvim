@@ -7,6 +7,10 @@ vim.api.nvim_create_user_command("AgentReview", function(o)
   require("agentreview").open(o.args)
 end, { nargs = "?" })
 
+vim.api.nvim_create_user_command("AgentReviewCommit", function(o)
+  require("agentreview").open_commit(o.args)
+end, { nargs = "?" })
+
 vim.api.nvim_create_user_command("AgentReviewComment", function(o)
   require("agentreview").comment(o)
 end, { range = true })

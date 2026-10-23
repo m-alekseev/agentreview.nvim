@@ -75,14 +75,17 @@ local function default_base(root)
   return tree and vim.trim(tree) or "HEAD"
 end
 
-local function collect(base, root)
+local function collect(base, root, commit)
   local args = { "diff", "--no-color", "--no-ext-diff", base or default_base(root), "--" }
+  if commit then
+    args = { "show", "--format=", "--no-color", "--no-ext-diff", "--diff-merges=first-parent", commit, "--" }
+  end
   local out, err = git.run(args, root)
   if not out then
     return nil, err
   end
   local chunks = { out }
-  if not base then
+  if not base and not commit then
     local untracked = git.run({ "ls-files", "--others", "--exclude-standard" }, root)
     for path in vim.gsplit(untracked or "", "\n", { plain = true, trimempty = true }) do
       local d = git.run({ "diff", "--no-color", "--no-index", "--", "/dev/null", path }, root, { 1 })
@@ -92,8 +95,23 @@ local function collect(base, root)
   return table.concat(chunks)
 end
 
-function M.build(base, root)
-  local text, err = collect(base, root)
+function M.commits(root)
+  local out, err = git.run({ "log", "-n", "50", "--format=%h%x09%s%x09%ar" }, root)
+  if not out then
+    return nil, err
+  end
+  local list = {}
+  for line in vim.gsplit(out, "\n", { plain = true, trimempty = true }) do
+    local rev, subject, age = line:match("^([^\t]+)\t(.*)\t([^\t]*)$")
+    if rev then
+      list[#list + 1] = { rev = rev, label = ("%s %s (%s)"):format(rev, subject, age) }
+    end
+  end
+  return list
+end
+
+function M.build(base, root, commit)
+  local text, err = collect(base, root, commit)
   if not text then
     return nil, err
   end

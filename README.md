@@ -15,7 +15,7 @@ Add a plugin spec, in LazyVim as `lua/plugins/agentreview.lua` with a leading `r
 ```lua
 {
   "m-alekseev/agentreview.nvim",
-  cmd = { "AgentReview", "AgentReviewComment", "AgentReviewSend", "AgentReviewTarget" },
+  cmd = { "AgentReview", "AgentReviewCommit", "AgentReviewComment", "AgentReviewSend", "AgentReviewTarget" },
   opts = {},
 }
 ```
@@ -24,7 +24,8 @@ Add a plugin spec, in LazyVim as `lua/plugins/agentreview.lua` with a leading `r
 
 ```lua
 keys = {
-  { "<leader>r", "<cmd>AgentReview<cr>", desc = "Agent review" },
+  { "<leader>rr", "<cmd>AgentReview<cr>", desc = "Agent review" },
+  { "<leader>rh", "<cmd>AgentReviewCommit<cr>", desc = "Agent review commit" },
   { "<leader>rt", "<cmd>AgentReviewTarget<cr>", desc = "Agent review target" },
   { "<leader>rs", "<cmd>AgentReviewSend<cr>", desc = "Agent review send" },
 },
@@ -42,10 +43,10 @@ require("agentreview").setup({})
 I have an alias in my `.zshrc`:
 
 ```sh
-alias nr='nvim -c AgentReview'
+nr() { if [ -n "$1" ]; then nvim -c "AgentReviewCommit $1"; else nvim -c AgentReview; fi }
 ```
 
-After the agent finishes, I `cd` into the repo, type `nr`, comment on the diff and send the comments back to it.
+After the agent finishes, I `cd` into the repo, type `nr`, comment on the diff and send the comments back to it. `nr <rev>` reviews only that commit's changes.
 
 ## Config
 
@@ -68,6 +69,7 @@ require("agentreview").setup({
 | Command | Action |
 | --- | --- |
 | `:AgentReview [base]` | Open the diff (working tree vs `HEAD`, plus untracked files; or vs `base`) |
+| `:AgentReviewCommit [rev]` | Open only the changes of one commit (like `git show`); without `rev`, pick from the last 50 commits. Merge commits diff against the first parent |
 | `:'<,'>AgentReviewComment` | Comment on the selected lines |
 | `:AgentReviewSend` | Write `<git-dir>/agent-review.md` and send the prompt via the transport |
 | `:AgentReviewTarget` | Re-open the target picker |
